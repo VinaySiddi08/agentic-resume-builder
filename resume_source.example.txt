@@ -1,0 +1,40 @@
+JANE DOE
+555 123 4567 | Anytown, USA | jane.doe@example.com | LinkedIn
+
+Professional Summary
+Data Science graduate with hands-on experience in machine learning, data analytics, and cloud computing.
+Proficient in Python, SQL, and Spark with a strong foundation in statistical modeling, data visualization, and ETL processes.
+
+Education
+Master of Science in Data Science, Example University, Anytown, USA (Aug 2024 - May 2026)
+B.S. in Computer Science (GPA: 3.5), Example College, Anytown, USA (2020 - 2024)
+
+Technical Skills
+Databases: Excel, MySQL, PostgreSQL, MongoDB (NoSQL)
+Programming: Python (Pandas, NumPy, Scikit-learn, TensorFlow), SQL, R
+Machine Learning: Regression, Classification, Clustering, Feature Engineering
+Statistics: Nonparametric tests, hypothesis testing, correlation analysis, statistical reporting
+Tools & Platforms: Power BI, Git, Linux, AWS
+
+Internships and Industry Experience
+
+Data Science Intern — Example Company
+- Preprocessed and analyzed large datasets using Python and Pandas, performing data cleaning and exploratory data analysis.
+- Developed machine learning models using Scikit-learn for classification and regression tasks.
+- Documented model metrics and analysis results for stakeholder review.
+- Collaborated with team members to define project requirements and present findings.
+
+Projects
+
+Example Statistical Analysis Project (R)
+- Analyzed a large public dataset, cleaning and validating records and deriving key numeric outcomes.
+- Implemented multiple statistical tests to compare groups, documenting methodology and findings.
+- Produced reproducible visualizations and a technical report with interpretation.
+
+Example Prediction Model
+- Built Logistic Regression and Random Forest models on a public dataset, applying imputation and class-imbalance handling.
+- Evaluated with ROC curves, confusion matrix metrics, and feature importance analysis.
+
+Certifications and Achievements
+- Example Cloud Certification — Cloud-based analytics and data lifecycle management.
+- Machine Learning with Python — End-to-end ML projects with real-world datasets.
