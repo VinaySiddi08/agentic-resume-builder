@@ -1,5 +1,7 @@
 # Agentic Resume Builder
 
+![Agentic Resume Builder](screenshot.png)
+
 An agent that tailors your resume to a specific job posting. Every time you
 find a new posting, feed it in and get back a tailored, one-page PDF resume
 in about 30-60 seconds.
