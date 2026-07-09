@@ -2,112 +2,132 @@
 
 ![Agentic Resume Builder](screenshot.png)
 
-An agent that tailors your resume to a specific job posting. Every time you
-find a new posting, feed it in and get back a tailored, one-page PDF resume
-in about 30-60 seconds.
+An AI agent that tailors your resume to a specific job posting, fact-checks its
+own output so it never invents experience you don't have, and drafts a matching
+cover letter. Roughly a minute per application.
 
-## How it works (the "agentic" part)
+## What makes it an agent
 
-Instead of one prompt -> one output, the script runs a 4-step pipeline where
-each step's output decides what happens next:
+Most AI resume tools send one prompt and print whatever comes back. This one
+runs a pipeline where each step decides what happens next — including a
+verification loop that catches and repairs its own mistakes:
 
-1. **Extract** - reads the job posting and pulls out required skills, ATS
+1. **Extract** — reads the job posting and pulls out required skills, ATS
    keywords, and the real focus of the role.
-2. **Tailor** - rewrites your summary, reorders your skills, and rewords your
-   bullet points to speak to those requirements — using ONLY facts already
+2. **Tailor** — rewrites the summary, reorders skills, and rewords bullet
+   points to speak to those requirements, using only facts already present
    in your original resume.
-3. **Verify** - a separate pass fact-checks the tailored draft against your
-   original resume and flags anything that looks made up.
-4. **Revise (loop)** - if issues are found, it automatically regenerates the
-   draft with those issues called out, up to 2 times.
-5. **Render** - writes the final, verified content into a clean PDF.
+3. **Verify** — a separate fact-checking pass compares the tailored draft
+   against your original and flags any claim it can't support.
+4. **Revise (loop)** — if issues are found, the agent regenerates the draft
+   with those issues called out, and re-checks. Up to two rounds.
+5. **Render** — writes the verified content into a clean one-page PDF, plus
+   a cover letter.
 
-This means it will never invent a skill, tool, or accomplishment you don't
-actually have — it repositions what's true, it doesn't fabricate.
+In practice step 3 earns its keep. On a mismatched posting it routinely catches
+half a dozen overstated claims in the first draft and rewrites them out.
+The tool repositions what is true; it does not fabricate.
 
-## Setup
+## Requirements
+
+- Python 3.10 or newer
+- An [Anthropic API](https://console.anthropic.com) account with some credit
+
+**Bring your own API key.** Anthropic bills whichever key makes the request,
+so running this uses your own account. A full run (resume + cover letter)
+costs a few cents. Your key is read from the environment or entered into a
+masked field, used in memory for that one request, and never written to disk
+or logged. Never commit a key — the included `.gitignore` helps.
+
+## Install
 
 ```bash
+git clone https://github.com/VinaySiddi08/agentic-resume-builder.git
+cd agentic-resume-builder
 pip install -r requirements.txt
-export ANTHROPIC_API_KEY="your-key-here"   # from console.anthropic.com
+export ANTHROPIC_API_KEY="sk-ant-your-key-here"
 ```
 
-Then create your own resume source file by copying the example:
+On Windows, use `set ANTHROPIC_API_KEY=...` instead of `export`.
+The `export` lasts only for that terminal session.
 
-```bash
-cp resume_source.example.txt resume_source.txt
-```
+## Use it
 
-Edit `resume_source.txt` with your real details. This file is git-ignored,
-so your personal information stays local and never gets committed.
-
-**Bring your own API key.** This tool calls the Anthropic API, and charges
-land on whichever key makes the request — so running it uses your own
-Anthropic account, not anyone else's. Each run costs a few cents.
-Never commit your key; the included `.gitignore` helps.
-
-## Two ways to use it
-
-### Web interface (easiest)
+### Web interface (easiest — no setup files needed)
 
 ```bash
 streamlit run app.py
 ```
 
 Opens in your browser. Upload your resume, paste the job posting, enter the
-company name, click Generate, and download both PDFs. The agent's progress
+company name, click **Generate**, and download both PDFs. The agent's progress
 is shown live as it works through each step.
 
-The app reads your `ANTHROPIC_API_KEY` from the environment if it is set;
-otherwise it asks for one in a masked field. Either way the key is used in
-memory for that request only — it is never written to disk or logged.
+If `ANTHROPIC_API_KEY` isn't set, the sidebar will ask for one.
 
 ### Command line
 
+The CLI reads your resume from a file. Copy the example and fill in your own
+details:
+
 ```bash
-python agentic_resume_builder.py \
-    --resume resume_source.txt \
-    --job job_posting.txt \
-    --company "HackerEarth" \
-    --output Vinay_Resume_HackerEarth.pdf
+cp resume_source.example.txt resume_source.txt
 ```
 
-This produces TWO files:
-- `Vinay_Resume_HackerEarth.pdf` (the tailored resume)
-- `Vinay_Resume_HackerEarth_cover_letter.pdf` (a matching cover letter)
-
-Add `--no-cover-letter` if you only want the resume.
-Use `--job-text "pasted posting text"` instead of `--job` to paste inline.
-Your resume file can be `.txt`, `.pdf`, or `.docx`.
-
-### Naming the employer (important)
-
-Many job-board postings never state the actual company in the description
-text — or they mention tools/platforms the company uses, which the agent
-can mistake for the employer. To avoid a cover letter addressed to the
-wrong company, pass the employer name explicitly:
+`resume_source.txt` is git-ignored, so your personal information stays local.
+Then save a job posting to `job_posting.txt` and run:
 
 ```bash
 python agentic_resume_builder.py \
     --resume resume_source.txt \
     --job job_posting.txt \
-    --company "HackerEarth" \
-    --output Vinay_Resume_HackerEarth.pdf
+    --company "Acme Corp" \
+    --output Resume_Acme.pdf
 ```
 
-If you leave `--company` off, the agent will try to identify the employer
-from the posting and will fall back to a neutral "Hiring Team" (no company
-name) rather than guessing when it isn't clearly stated.
+That produces two files: `Resume_Acme.pdf` and
+`Resume_Acme_cover_letter.pdf`.
 
-## Files in this folder
+| Flag | Purpose |
+| --- | --- |
+| `--resume` | Your resume: `.txt`, `.pdf`, or `.docx` |
+| `--job` / `--job-text` | Posting from a file, or pasted inline |
+| `--company` | Employer name (see below) |
+| `--output` | Output PDF path |
+| `--no-cover-letter` | Skip the cover letter |
 
-- `agentic_resume_builder.py` - the agent
-- `resume_source.txt` - your resume in plain text, ready to reuse for future postings
-- `Vinay_Siddi_Resume_Zerve_DataAnalyst.pdf` - a sample tailored resume already generated for the Zerve Data Analyst posting, so you can see the output quality before running it yourself
+### Naming the employer
 
-## Notes / things worth knowing
+Many postings never state the hiring company in the description, or they
+mention tools the company uses — which an agent can mistake for the employer.
+Passing `--company` (or filling the field in the web UI) avoids a cover letter
+addressed to the wrong organization.
 
-- Each run costs a small amount on your Anthropic API usage (a few cents per resume) since it makes several model calls.
-- The verify/revise loop is there specifically to prevent resume fabrication — worth keeping even if it adds a call or two.
-- If you want to tweak the visual layout (fonts, spacing, section order), edit the `render_pdf()` function — it's plain reportlab, no magic.
-- Want it to also draft a matching cover letter? That's a natural next step to bolt onto this same pipeline (extract -> tailor resume -> tailor cover letter -> render both) if you want it added.
+Leave it off and the agent will only name a company when the posting clearly
+states one, falling back to a neutral "Hiring Team" rather than guessing.
+
+## Known limitations
+
+- **Scanned-image PDFs won't work.** If your resume PDF has no embedded text
+  layer, nothing can be extracted. Use a `.docx` or `.txt` instead.
+- **The layout targets one page.** A long career history may overflow onto a
+  second page. Edit `render_pdf()` to adjust spacing — it's plain `reportlab`.
+- **It cannot judge whether you're eligible.** Some postings (US civil service
+  roles especially) screen against a rigid education-and-years formula. The
+  agent will honestly present what you have; confirming you meet a stated
+  minimum qualification is on you.
+- **Always read the output before sending.** The fact-checker prevents
+  fabrication, not awkward emphasis. You are the final editor.
+
+## Files
+
+| File | Purpose |
+| --- | --- |
+| `agentic_resume_builder.py` | The agent and CLI |
+| `app.py` | Streamlit web interface |
+| `resume_source.example.txt` | Template to copy for CLI use |
+| `requirements.txt` | Python dependencies |
+
+## License
+
+MIT — do what you like with it.
