@@ -39,18 +39,40 @@ cp resume_source.example.txt resume_source.txt
 Edit `resume_source.txt` with your real details. This file is git-ignored,
 so your personal information stays local and never gets committed.
 
-## Usage
+**Bring your own API key.** This tool calls the Anthropic API, and charges
+land on whichever key makes the request — so running it uses your own
+Anthropic account, not anyone else's. Each run costs a few cents.
+Never commit your key; the included `.gitignore` helps.
+
+## Two ways to use it
+
+### Web interface (easiest)
+
+```bash
+streamlit run app.py
+```
+
+Opens in your browser. Upload your resume, paste the job posting, enter the
+company name, click Generate, and download both PDFs. The agent's progress
+is shown live as it works through each step.
+
+The app reads your `ANTHROPIC_API_KEY` from the environment if it is set;
+otherwise it asks for one in a masked field. Either way the key is used in
+memory for that request only — it is never written to disk or logged.
+
+### Command line
 
 ```bash
 python agentic_resume_builder.py \
     --resume resume_source.txt \
     --job job_posting.txt \
-    --output Vinay_Resume_CompanyName.pdf
+    --company "HackerEarth" \
+    --output Vinay_Resume_HackerEarth.pdf
 ```
 
 This produces TWO files:
-- `Vinay_Resume_CompanyName.pdf` (the tailored resume)
-- `Vinay_Resume_CompanyName_cover_letter.pdf` (a matching cover letter)
+- `Vinay_Resume_HackerEarth.pdf` (the tailored resume)
+- `Vinay_Resume_HackerEarth_cover_letter.pdf` (a matching cover letter)
 
 Add `--no-cover-letter` if you only want the resume.
 Use `--job-text "pasted posting text"` instead of `--job` to paste inline.
